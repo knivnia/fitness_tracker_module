@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
@@ -47,7 +48,8 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise Exception('Функция get_spent_calories должна быть переопределена')
+        raise Exception('Функция get_spent_calories'
+                        'должна быть переопределена')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -73,7 +75,7 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        
+
         return ((self.CALORIE_FACTOR
                 * self.get_mean_speed()
                 - self.CALORIE_SUBSTRAHEND)
@@ -87,7 +89,7 @@ class SportsWalking(Training):
 
     CALORIE_FACTOR_1: float = 0.035
     CALORIE_FACTOR_2: float = 0.029
-    
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -142,7 +144,7 @@ class Swimming(Training):
 def read_package(workout_type: str, data: List[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    if workout_type in workout_dict['SWM']: #имеет ли смысл, если все равно вручную пишется swm?
+    if workout_type in workout_dict['SWM']:
         return Swimming(*data)
     elif workout_type in workout_dict['RUN']:
         return Running(*data)
@@ -157,10 +159,11 @@ def main(training: Training) -> None:
     info = training.show_training_info()
     print(info.get_message())
 
+
 workout_dict = {'SWM': ('SWM', 'Swimming', 'Swim', 'swm', 'swimming', 'swim'),
                 'RUN': ('RUN', 'Running', 'Run', 'run', 'running'),
-                'WLK': ('WLK', 'Walking', 'SportsWalking', 'Sports Walking', 'wlk', 'walk')
-}
+                'WLK': ('WLK', 'Walking', 'SportsWalking',
+                        'Sports Walking', 'wlk', 'walk')}
 
 if __name__ == '__main__':
     packages = [
