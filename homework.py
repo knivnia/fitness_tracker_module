@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List  # , Optional
 
 
 @dataclass
@@ -30,13 +30,12 @@ class Training:
     def __init__(self,
                  action: int,
                  duration: float,
-                 weight: float,
-                 training_type: Optional[str] = None
+                 weight: float
                  ) -> None:
         self.action = action
         self.duration = duration
         self.weight = weight
-        self.training_type = training_type
+        self.training_type = None
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -48,8 +47,9 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise Exception('Функция get_spent_calories'
-                        'должна быть переопределена')
+        raise NotImplementedError(f'Функция get_spent_calories '
+                                  f'не переопределена в классе '
+                                  f'{type(self).__name__}')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -63,22 +63,23 @@ class Training:
 class Running(Training):
     """Тренировка: бег."""
 
-    CALORIE_FACTOR: int = 18
-    CALORIE_SUBSTRAHEND: int = 20
+    FACTOR: int = 18
+    SUBSTRAHEND: int = 20
 
     def __init__(self,
                  action: int,
                  duration: float,
                  weight: float
                  ) -> None:
-        super().__init__(action, duration, weight, 'Running')
+        super().__init__(action, duration, weight)
+        self.training_type = type(self).__name__
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
 
-        return ((self.CALORIE_FACTOR
+        return ((self.FACTOR
                 * self.get_mean_speed()
-                - self.CALORIE_SUBSTRAHEND)
+                - self.SUBSTRAHEND)
                 * self.weight
                 / self.M_IN_KM
                 * self.duration * self.H_IN_MIN)
@@ -87,8 +88,8 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
-    CALORIE_FACTOR_1: float = 0.035
-    CALORIE_FACTOR_2: float = 0.029
+    WEIGHT_FACTOR: float = 0.035
+    SPEED_FACTOR: float = 0.029
 
     def __init__(self,
                  action: int,
@@ -96,15 +97,16 @@ class SportsWalking(Training):
                  weight: float,
                  height: float
                  ) -> None:
-        super().__init__(action, duration, weight, 'SportsWalking')
+        super().__init__(action, duration, weight)
         self.height = height
+        self.training_type = type(self).__name__
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return ((self.CALORIE_FACTOR_1
+        return ((self.WEIGHT_FACTOR
                 * self.weight
                 + (self.get_mean_speed() ** 2 // self.height)
-                * self.CALORIE_FACTOR_2
+                * self.SPEED_FACTOR
                 * self.weight) * self.duration * self.H_IN_MIN)
 
 
@@ -122,9 +124,10 @@ class Swimming(Training):
                  length_pool: float,
                  count_pool: int
                  ) -> None:
-        super().__init__(action, duration, weight, 'Swimming')
+        super().__init__(action, duration, weight)
         self.length_pool = length_pool
         self.count_pool = count_pool
+        self.training_type = type(self).__name__
 
     def get_mean_speed(self) -> float:
         """Получить среднюю скорость движения."""
@@ -144,14 +147,14 @@ class Swimming(Training):
 def read_package(workout_type: str, data: List[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    if workout_type in workout_dict['SWM']:
-        return Swimming(*data)
-    elif workout_type in workout_dict['RUN']:
-        return Running(*data)
-    elif workout_type in workout_dict['WLK']:
-        return SportsWalking(*data)
+    workout_dict = {'SWM': Swimming,
+                    'RUN': Running,
+                    'WLK': SportsWalking}
+
+    if workout_type in workout_dict:
+        return workout_dict[workout_type](*data)
     else:
-        raise Exception('Тип тренировки не определен')
+        raise NotImplementedError('Тип тренировки не определен')
 
 
 def main(training: Training) -> None:
@@ -159,11 +162,6 @@ def main(training: Training) -> None:
     info = training.show_training_info()
     print(info.get_message())
 
-
-workout_dict = {'SWM': ('SWM', 'Swimming', 'Swim', 'swm', 'swimming', 'swim'),
-                'RUN': ('RUN', 'Running', 'Run', 'run', 'running'),
-                'WLK': ('WLK', 'Walking', 'SportsWalking',
-                        'Sports Walking', 'wlk', 'walk')}
 
 if __name__ == '__main__':
     packages = [
