@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List  # , Optional
+from typing import List
 
 
 @dataclass
@@ -47,8 +47,8 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError(f'Функция get_spent_calories '
-                                  f'не переопределена в классе '
+        raise NotImplementedError('Функция get_spent_calories '
+                                  'не переопределена в классе '
                                   f'{type(self).__name__}')
 
     def show_training_info(self) -> InfoMessage:
@@ -114,8 +114,8 @@ class Swimming(Training):
     """Тренировка: плавание."""
 
     LEN_STEP: float = 1.38
-    CALORIE_ADD: float = 1.1
-    CALORIE_FACTOR: float = 2
+    ADD: float = 1.1
+    FACTOR: float = 2
 
     def __init__(self,
                  action: int,
@@ -139,22 +139,21 @@ class Swimming(Training):
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         return ((self.get_mean_speed()
-                + self.CALORIE_ADD)
-                * self.CALORIE_FACTOR
+                + self.ADD)
+                * self.FACTOR
                 * self.weight)
 
 
 def read_package(workout_type: str, data: List[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    workout_dict = {'SWM': Swimming,
-                    'RUN': Running,
-                    'WLK': SportsWalking}
+    workout_codes: dict = {'SWM': Swimming,
+                           'RUN': Running,
+                           'WLK': SportsWalking}
 
-    if workout_type in workout_dict:
-        return workout_dict[workout_type](*data)
-    else:
-        raise NotImplementedError('Тип тренировки не определен')
+    if workout_type in workout_codes:
+        return workout_codes[workout_type](*data)
+    raise ValueError('Тип тренировки не определен')
 
 
 def main(training: Training) -> None:
