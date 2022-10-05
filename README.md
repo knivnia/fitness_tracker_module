@@ -1,7 +1,7 @@
 # Fitness tracker module
 ### Description
 
-This module is designed to process information about workout. It receives data from sensors, defines the type of training, processing the data and shows info message with results (type of training, workuot duration, distance, avg speed and spent calories).
+This module is designed to process information about workout. It receives data from sensors, defines the type of workout, processing the data and shows info message with results (type of training, workout duration, distance, avg speed and spent calories).
 
 ### Run the module:
 Clone repository and go to it's derictory on your computer:
